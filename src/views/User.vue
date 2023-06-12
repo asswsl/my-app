@@ -1,8 +1,8 @@
 <!--
  * @Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
  * @Date: 2023-03-28 22:41:17
- * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @LastEditTime: 2023-05-05 14:41:30
+ * @LastEditors: asswsl 107310268+asswsl@users.noreply.github.com
+ * @LastEditTime: 2023-06-12 16:47:13
  * @FilePath: \vued:\web\project\my-app\src\views\User.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -18,7 +18,6 @@
       <!-- 用户信息编辑· -->
       <el-form
         ref="form"
-        inline="true"
         :model="form"
         :rules="rules"
         label-width="80px"
@@ -60,7 +59,7 @@
           plain
           type="primary"
           @click="
-          dialogVisible = false;
+            dialogVisible = false;
             success();
             submit();
           "
@@ -69,83 +68,43 @@
       </span>
     </el-dialog>
     <div class="menage">
-      <el-button type="primary" @click="dialogVisible = true">+ 新增</el-button>
+      <el-button
+        type="primary"
+        @click="
+          dialogVisible = true;
+          modalType = 0;
+        "
+        >+ 新增</el-button
+      >
     </div>
     <!-- 用户信息 -->
-     <el-table
-    :data="UserData"
-    stripe
-    style="width: 100%">
-    <el-table-column
-      prop="name"
-      label="姓名"
-      width="200">
-    </el-table-column>
-        <el-table-column
-      prop="age"
-      label="年龄"
-      width="200">
-    </el-table-column>
-        <el-table-column
-      prop="sex"
-      label="性别"
-      width="200">
-    </el-table-column>
-       <el-table-column
-      prop="birth"
-      label="出生日期"
-      width="200">
-    </el-table-column>
-    <el-table-column
-      prop="addr"
-      label="地址"
-      width="200">
-    </el-table-column>
-  </el-table>
+    <el-table :data="TableData" stripe style="width: 100%">
+      <el-table-column prop="name" label="姓名"> </el-table-column>
+      <el-table-column prop="age" label="年龄"> </el-table-column>
+      <el-table-column prop="sexLabel" label="性别"> </el-table-column>
+      <el-table-column prop="birth" label="出生日期"> </el-table-column>
+      <el-table-column prop="addr" label="地址"> </el-table-column>
+      <el-table-column prop="addr" label="地址">
+        <template slot-scope="scope">
+          <el-button
+            @click="
+              eidt(scope.row);
+              modalType = 1;
+            "
+            >编辑</el-button
+          >
+          <el-button type="danger" @click="del(scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
   </div>
 </template>
 <script>
+import { getUser, addUser, eidtUser } from "../api";
 export default {
   data() {
     return {
       dialogVisible: false,
-      // formLabel: [
-      //   {
-      //     model: "name",
-      //     label: "姓名",
-      //     type: "input",
-      //   },
-      //   {
-      //     model: "age",
-      //     label: "年龄",
-      //     type: "input",
-      //   },
-      //   {
-      //     model: "sex",
-      //     label: "性别",
-      //     type: "select",
-      //     opts: [
-      //       {
-      //         label: "男",
-      //         value: 1,
-      //       },
-      //       {
-      //         label: "女",
-      //         value: 0,
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     model: "birth",
-      //     label: "出生日期",
-      //     type: "date",
-      //   },
-      //   {
-      //     model: "addr",
-      //     label: "地址",
-      //     type: "input",
-      //   },
-      // ],
       form: {
         name: "",
         age: "",
@@ -160,7 +119,8 @@ export default {
         birth: [{ required: true, message: "请选择出生日期", trigger: "blur" }],
         addr: [{ required: true, message: "请输入地址", trigger: "blur" }],
       },
-      UserData:[]
+      TableData: [],
+      modalType: 0, // 0表示新增状态 1表示编辑状态
     };
   },
   methods: {
@@ -168,11 +128,20 @@ export default {
       this.$refs.form.validate((valid) => {
         // console.log(valid, "valid"); //valid 判断数据是否提交成功 true false
         if (valid) {
-          this.form.birth=
-           this.UserData.push(this.form)
+          // 首先写入数据，而后重新获取列表数据
+          if (this.modalType == 0) {
+            addUser(this.form).then(() => {});
+            // 重新获取列表数据
+            this.getList();
+          } else {
+            eidtUser(this.form).then(() => {
+              this.getList();
+            });
+          }
+          this.form.birth = this.UserData.push(this.form);
           // 数据提交成功，数据传入后台
           console.log(this.form, "form");
-          console.log(this.UserData,'userData');
+          console.log(this.UserData, "userData");
         }
         this.dialogVisible = false;
       });
@@ -197,6 +166,16 @@ export default {
         type: "warning",
       });
     },
+
+    getList() {
+      getUser().then(({ data }) => {
+        console.log(data);
+        this.TableData = data.list;
+      });
+    },
+  },
+  mounted() {
+    this.getList();
   },
 };
 </script>

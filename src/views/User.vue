@@ -2,7 +2,7 @@
  * @Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
  * @Date: 2023-03-28 22:41:17
  * @LastEditors: asswsl 107310268+asswsl@users.noreply.github.com
- * @LastEditTime: 2023-06-12 17:48:56
+ * @LastEditTime: 2023-06-12 16:47:13
  * @FilePath: \vued:\web\project\my-app\src\views\User.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -143,7 +143,6 @@ export default {
           console.log(this.form, "form");
           console.log(this.UserData, "userData");
         }
-        this.$refs.form.resetFields();
         this.dialogVisible = false;
       });
     },

@@ -2,7 +2,7 @@
  * @Author: asswsl 107310268+asswsl@users.noreply.github.com
  * @Date: 2023-06-13 15:28:10
  * @LastEditors: asswsl 107310268+asswsl@users.noreply.github.com
- * @LastEditTime: 2023-06-13 17:29:54
+ * @LastEditTime: 2023-06-14 17:02:19
  * @FilePath: \my-app\src\views\User.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -21,8 +21,8 @@
                 <el-form-item label="性别" prop="sex">
                     <el-select placeholder="请选择性别" v-model="form.sex">
                         <!-- 给选项不同的value值来进行区分不同的选项 -->
-                        <el-option label="男" value="男"></el-option>
-                        <el-option label="女" value="女"></el-option>
+                        <el-option label="男" value="1"></el-option>
+                        <el-option label="女" value="0"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="出生日期" prop="birth">
@@ -40,10 +40,33 @@
         </el-dialog>
         <div class="manage-header">
             <el-button type="primary" @click="dialogVisible = true">+新增</el-button>
+            <el-table :data="tableData" stripe style="width: 100%">
+                <el-table-column prop="name" label="姓名">
+                </el-table-column>
+                <el-table-column prop="age" label="年龄">
+                </el-table-column>
+                <el-table-column prop="sex" label="性别">
+                    <template slot-scope="scope">
+                        <span style="margin-left: 10px">{{ scope.row.sex == 1 ? '男' : '女' }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="birth" label="出生日期">
+                </el-table-column>
+                <el-table-column prop="addr" label="地址">
+                </el-table-column>
+                <el-table-column label="操作">
+                    <template slot-scope="scope">
+                        <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
+                        <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
         </div>
+
     </div>
 </template>
 <script>
+import { getUser, addUser, editUser, delUser } from '../api'
 export default {
     data() {
         return {
@@ -61,7 +84,8 @@ export default {
                 sex: [{ required: true, message: '请选择性别' }],
                 birth: [{ required: true, message: '请输入出生日期' }],
                 addr: [{ required: true, message: '请输入地址' }]
-            }
+            },
+            tableData: []
         };
     },
     methods: {
@@ -90,7 +114,19 @@ export default {
         },
         cancel() {
             this.handclose()
+        },
+        handleEdit(row) {
+
+        },
+        handleDelete(row) {
+
         }
+    },
+    mounted() {
+        getUser().then(({ data }) => {
+            console.log(data);
+            this.tableData = data.list
+        })
     }
 };
 </script>

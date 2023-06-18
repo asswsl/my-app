@@ -14,7 +14,7 @@ import user from './MockServeData/user'
 Mock.mock('/api/home/getData', homeApi.getStatisticalData)
 
 // 获取用户列表数据
-Mock.mock('/api/user/getUser', user.getUserList)
+Mock.mock(/api\/user\/getUser/, user.getUserList)
 // 创建
 Mock.mock('/api/user/add','post', user.createUser)
 // 修改

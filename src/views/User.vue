@@ -2,7 +2,7 @@
  * @Author: asswsl 107310268+asswsl@users.noreply.github.com
  * @Date: 2023-06-13 15:28:10
  * @LastEditors: asswsl 107310268+asswsl@users.noreply.github.com
- * @LastEditTime: 2023-06-15 15:41:46
+ * @LastEditTime: 2023-06-18 16:13:06
  * @FilePath: \my-app\src\views\User.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -42,7 +42,19 @@
         <div class="manage-header">
             <!-- 在@click中调用方法，如果方法名不加括号，仅会在点击时调用方法，如果加上括号，则会立即调用一次，在点击时再次调用 -->
             <el-button type="primary" @click="handleAdd">+新增</el-button>
-            <el-table :data="tableData" stripe style="width: 100%">
+            <!-- form搜索区域 -->
+            <el-form :model="userForm" :inline="true">
+                <el-form-item>
+                    <el-input placeholder="输入搜索姓名" v-model="userForm.name"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="find">搜索</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+        <div class="common-table">
+            <!-- 用户数据显示区 -->
+            <el-table :data="tableData" stripe style="width: 100%" height="90%">
                 <el-table-column prop="name" label="姓名">
                 </el-table-column>
                 <el-table-column prop="age" label="年龄">
@@ -63,8 +75,12 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <!-- 分页区域 -->
+            <div class="pager">
+                <el-pagination layout="prev, pager, next" :total="total" @current-change="handlePage">
+                </el-pagination>
+            </div>
         </div>
-
     </div>
 </template>
 <script>
@@ -90,7 +106,16 @@ export default {
             // 用户列表数据
             tableData: [],
             // 区分新增用户 0 与更新用户 1 的状态
-            modalType: 0
+            modalType: 0,
+            // 当前用户总条数
+            total: 0,
+            pageData: {
+                page: 1,
+                limit: 10
+            },
+            userForm: {
+                name: ''
+            }
         };
     },
     methods: {
@@ -128,31 +153,39 @@ export default {
             this.$refs.form.resetFields()
             this.dialogVisible = false
         },
+        // 新增用户
         handleAdd() {
             this.dialogVisible = true
             this.modalType = 0
         },
+        // 新增页面选择取消
         cancel() {
             this.handclose()
         },
+        // 用户编辑
         handleEdit(row) {
             this.dialogVisible = true
             this.modalType = 1
             // 对当前行数据进行深拷贝，创建一个副本以便于进行数据修改 否则会报错
             this.form = JSON.parse(JSON.stringify(row))
         },
+        // 获取用户列表
         getList() {
-            getUser().then(({ data }) => {
+            getUser({ params: { ...this.userForm, ...this.pageData } }).then(({ data }) => {
+                console.log(data);
                 this.tableData = data.list
+                // 总条数为用户总数据长度，不存在时为0
+                this.total = data.count || 0
             })
         },
+        // 删除用户数据
         handleDelete(row) {
             this.$confirm('此操作将删除改用户信息, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                delUser({id:row.id}).then(() => {
+                delUser({ id: row.id }).then(() => {
                     this.$message({
                         type: 'success',
                         message: '删除成功!'
@@ -165,6 +198,16 @@ export default {
                     message: '已取消删除'
                 });
             });
+        },
+        // 换页
+        handlePage(val) {
+            console.log(val);
+            this.pageData.page = val
+            this.getList()
+        },
+        // 根据姓名搜索信息
+        find(){
+            this.getList()
         }
     },
     mounted() {
@@ -172,3 +215,24 @@ export default {
     }
 };
 </script>
+<style lang="less" scoped>
+.manage {
+    height: 90%;
+    .manage-header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .common-table {
+        position: relative;
+        // 动态计算长度 要求运算符前后均保留有一个空格
+        height: calc(100% - 62px);
+
+        .pager {
+            position: absolute;
+            bottom: 0px;
+            right: 20px
+        }
+    }
+}
+</style>

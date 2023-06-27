@@ -1,8 +1,8 @@
 /*
  * @Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
  * @Date: 2023-03-28 22:35:53
- * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @LastEditTime: 2023-03-30 21:12:20
+ * @LastEditors: asswsl 107310268+asswsl@users.noreply.github.com
+ * @LastEditTime: 2023-06-27 19:22:56
  * @FilePath: \vued:\web\project\my-app\src\router\index.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -14,6 +14,7 @@ import Main from '../views/Main.vue'
 import Mall from '../views/Mall.vue'
 import Page1 from '../views/Page1.vue'
 import Page2 from '../views/Page2.vue'
+import Login from '../views/Login.vue'
 Vue.use(VueRouter)
 // 1.创建路由组件
 
@@ -32,6 +33,10 @@ const routes = [
             { path: 'page2', name: 'page2', component: Page2 },//待定
         ]
     },
+    // 登录
+    {
+        path:'/login',name:'login',component:Login
+    }
 
 ]
 // 2.将路由与组件建立映射
